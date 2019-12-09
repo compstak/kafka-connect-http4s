@@ -1,6 +1,6 @@
-val scala211 = "2.11.12"
 val scala212 = "2.12.10"
-val supportedScalaVersions = List(scala212, scala211)
+val scala213 = "2.13.1"
+val supportedScalaVersions = List(scala212, scala213)
 
 ThisBuild / organization := "compstak"
 ThisBuild / scalaVersion := scala212
