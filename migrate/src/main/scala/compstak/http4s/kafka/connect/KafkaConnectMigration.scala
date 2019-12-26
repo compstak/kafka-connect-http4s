@@ -71,9 +71,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
       Sync[F].delay(this.getClass.getResourceAsStream(p.toAbsolutePath.toString)),
       4096,
       Blocker.liftExecutionContext(ExecutionContext.global)
-    ).through(utf8Decode)
-      .compile
-      .lastOrError
+    ).through(utf8Decode).compile.lastOrError
 
     content.flatMap { js =>
       parse(js).map((p.getFileName.toString.replace(".json", ""), _)).liftTo[F]
