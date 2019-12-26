@@ -53,7 +53,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](client: KafkaConnectClient
 
   private[this] def buildDeprecatedConfigs =
     client.connectorNames.map { connectors =>
-      listActiveConfigs.map(_.getFileName.toString).filter(!connectors.contains_(_))
+      listActiveConfigs.map(_.getFileName.toString.replace(".json", "")).filter(!connectors.contains_(_))
     }
     .map(_.map(Delete(_)))
     
