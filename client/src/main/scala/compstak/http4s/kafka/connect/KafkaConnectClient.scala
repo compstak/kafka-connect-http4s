@@ -8,6 +8,7 @@ import org.http4s.circe.CirceEntityCodec._
 import cats.effect.Sync
 import io.circe.Encoder
 import io.circe.Decoder
+import cats.effect.Resource
 
 final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
 
@@ -102,4 +103,10 @@ final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
       )
     )
 
+}
+
+object KafkaConnectClient {
+
+  def apply[F[_]: Sync](client: Client[F], uri: Uri): Resource[F, KafkaConnectClient[F]] =
+    Resource.pure(new KafkaConnectClient(client, uri))
 }

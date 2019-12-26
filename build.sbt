@@ -44,7 +44,7 @@ lazy val publishSettings = Seq(
   }
 )
 
-lazy val root = (project in file("."))
+lazy val client = (project in file("client"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
@@ -54,3 +54,15 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-circe" % http4sVersion
     )
   )
+
+lazy val migrate = (project in file("migrate"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "kafka-connect-migrate",
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-io" % "2.1.0",
+      "io.circe" %% "circe-parser" % "0.12.3"
+    )
+  )
+  .dependsOn(client)
