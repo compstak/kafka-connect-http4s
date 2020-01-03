@@ -66,3 +66,10 @@ lazy val migrate = (project in file("migrate"))
     )
   )
   .dependsOn(client)
+
+lazy val root = (project in file("."))
+  .settings(
+    name := "kafka-connect",
+    publish := {}
+  )
+  .aggregate(client, migrate)
