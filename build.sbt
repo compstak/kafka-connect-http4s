@@ -27,14 +27,14 @@ val http4sVersion = "0.21.0-M6"
 
 lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
-)
-
-lazy val publishSettings = Seq(
+  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
   publishTo := {
     val prefix = if (isSnapshot.value) "snapshots" else "releases"
     Some("CompStak".at("s3://compstak-maven.s3-us-east-1.amazonaws.com/" + prefix))
-  },
+  }
+)
+
+lazy val publishSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
   releaseCrossBuild := true,
   publishMavenStyle := true,
@@ -68,6 +68,7 @@ lazy val migrate = (project in file("migrate"))
   .dependsOn(client)
 
 lazy val root = (project in file("."))
+  .settings(sharedSettings)
   .settings(
     name := "kafka-connect",
     publish := {}
