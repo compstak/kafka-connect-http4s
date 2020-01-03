@@ -68,7 +68,7 @@ lazy val migrate = (project in file("migrate"))
   .dependsOn(client)
 
 lazy val root = (project in file("."))
-  .settings(sharedSettings)
+  .settings(commonSettings)
   .settings(
     name := "kafka-connect",
     publish := {}
