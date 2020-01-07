@@ -1,6 +1,6 @@
 package compstak.http4s.kafka.connect
 
-import java.nio.file.{Files, FileSystems, Path, Paths}
+import java.nio.file.{FileSystems, Files, Path, Paths}
 
 import cats.effect._
 import cats.implicits._
