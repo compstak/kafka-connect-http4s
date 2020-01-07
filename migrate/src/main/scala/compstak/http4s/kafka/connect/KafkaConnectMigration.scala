@@ -91,13 +91,13 @@ object KafkaConnectMigration {
       _ <- Resource.liftF( // todo remove this when classpath loading fixed in the library
         Sync[F].delay(
           FileSystems.newFileSystem(
-            this.getClass.getResource("/kafka/connect").toURI,
+            this.getClass.getResource(path).toURI,
             Map.empty[String, String].asJava
           )
         )
       )
-      path = Paths.get(this.getClass.getResource("/kafka/connect").toURI)
-    } yield new KafkaConnectMigration(connect, path)
+      p <- Resource.liftF(Sync[F].delay(Paths.get(this.getClass.getResource(path).toURI)))
+    } yield new KafkaConnectMigration(connect, p)
 
   sealed trait MigrationAction
 
