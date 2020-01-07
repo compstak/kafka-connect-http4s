@@ -1,6 +1,6 @@
 package compstak.http4s.kafka.connect
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{FileSystems, Files, Path, Paths}
 
 import cats.effect._
 import cats.implicits._
@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext
 
 final class KafkaConnectMigration[F[_]: ContextShift](
   client: KafkaConnectClient[F],
-  config: KafkaConnectMigration.Configuration
+  path: Path
 )(implicit val F: Sync[F]) {
 
   def migrate: F[Unit] =
@@ -37,7 +37,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
 
   private[this] def listActiveConfigs =
     Stream
-      .fromIterator[F](Files.walk(config.path).iterator().asScala)
+      .fromIterator[F](Files.walk(path).iterator().asScala)
       .filter(_.endsWith(".json"))
 
   private[this] def buildActiveConfigs =
@@ -84,23 +84,20 @@ object KafkaConnectMigration {
   def apply[F[_]: Sync: ContextShift](
     client: Client[F],
     uri: Uri,
-    config: Option[Configuration] = None
+    path: String = "/kafka/connect"
   ): Resource[F, KafkaConnectMigration[F]] =
-    KafkaConnectClient[F](client, uri)
-      .map { c =>
-        config.fold(new KafkaConnectMigration(c, Configuration.default))(
-          new KafkaConnectMigration(c, _)
+    for {
+      connect <- KafkaConnectClient[F](client, uri)
+      _ <- Resource.liftF( // todo remove this when classpath loading fixed in the library
+        Sync[F].delay(
+          FileSystems.newFileSystem(
+            this.getClass.getResource(path).toURI,
+            Map.empty[String, String].asJava
+          )
         )
-      }
-
-  final case class Configuration(path: Path)
-
-  object Configuration {
-
-    val default: Configuration = Configuration(
-      path = Paths.get("kafka", "connect")
-    )
-  }
+      )
+      p <- Resource.liftF(Sync[F].delay(Paths.get(this.getClass.getResource(path).toURI)))
+    } yield new KafkaConnectMigration(connect, p)
 
   sealed trait MigrationAction
 
