@@ -61,7 +61,7 @@ lazy val migrate = (project in file("migrate"))
   .settings(
     name := "kafka-connect-migrate",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-io" % "2.1.0",
+      "co.fs2" %% "fs2-io" % "2.2.1",
       "io.circe" %% "circe-parser" % "0.12.3"
     )
   )
