@@ -1,8 +1,12 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.5
+  aws-cli: circleci/aws-cli@0.1.6
+
 _defaults: &defaults
-  docker:
-  - image: circleci/openjdk:8-jdk
+  machine:
+    docker_layer_caching: true
   working_directory: ~/repo
   environment:
     # Customize the JVM maximum heap limit
@@ -20,12 +24,17 @@ workflows:
         context: aws-deploy
     - style:
         context: aws-deploy
+    - integration:
+        context: aws-deploy
+        requires:
+          - build
     - request-release:
         type: approval
         requires:
         - build
         - test
         - style
+        - integration
         filters:
           branches:
             only:
@@ -95,6 +104,33 @@ jobs:
     - run:
         name: Run scalafmt checks
         command: cat /dev/null | sbt fmtCheck
+
+  integration:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: docker info
+      - restore_cache:
+          keys:
+            - v3-dependencies-{{ checksum "build.sbt" }}
+            - v3-dependencies-
+      - aws-ecr/ecr-login:
+          region: $AWS_REGION
+      - run:
+          name: Start Docker Compose environment
+          command: cat /dev/null | sbt dockerComposeUp
+      - run:
+          command: docker ps -a
+      - run:
+          name: yawn...
+          command: sleep 5
+      - run:
+          name: Run integration test suite
+          command: cat /dev/null | sbt -mem 4000 it:test
+      - run:
+          name: Stop Docker Compose environment
+          command: cat /dev/null | sbt dockerComposeStop
 
   # Release the next version
   publish:
