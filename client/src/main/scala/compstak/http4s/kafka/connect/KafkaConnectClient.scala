@@ -1,14 +1,11 @@
 package compstak.http4s.kafka.connect
 
 import org.http4s.client.Client
-import org.http4s.Request
-import org.http4s.Method
-import org.http4s.Uri
+import org.http4s.{Method, Request, Uri}
 import org.http4s.circe.CirceEntityCodec._
-import cats.effect.Sync
-import io.circe.Encoder
-import io.circe.Decoder
-import cats.effect.Resource
+import cats.effect.{Resource, Sync}
+import cats.implicits._
+import io.circe.{Decoder, Encoder}
 
 final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
 
@@ -81,12 +78,15 @@ final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
     )
 
   def deleteConnector(name: String): F[Unit] =
-    client.expect(
-      Request[F](
-        method = Method.DELETE,
-        uri = root / "connectors" / name / "pause"
+    client
+      .status(
+        Request[F](
+          method = Method.DELETE,
+          uri = root / "connectors" / name
+        )
       )
-    )
+      .ensureOr(s => new Throwable(s.renderString))(_.isSuccess)
+      .void
 
   def taskStatus(connectorName: String, taskId: Int): F[TaskStatus] =
     client.expect(
