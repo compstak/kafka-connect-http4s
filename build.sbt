@@ -5,6 +5,8 @@ val supportedScalaVersions = List(scala212, scala213)
 ThisBuild / organization := "compstak"
 ThisBuild / scalaVersion := scala212
 
+enablePlugins(DockerComposePlugin)
+
 scalacOptions ++= Seq(
   "-deprecation",
   "-encoding",
@@ -56,13 +58,17 @@ lazy val client = (project in file("client"))
   )
 
 lazy val migrate = (project in file("migrate"))
+  .configs(IntegrationTest)
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
     name := "kafka-connect-migrate",
+    Defaults.itSettings,
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-io" % "2.1.0",
-      "io.circe" %% "circe-parser" % "0.12.3"
+      "co.fs2" %% "fs2-io" % "2.2.1",
+      "io.circe" %% "circe-parser" % "0.12.3",
+      "org.http4s" %% "http4s-async-http-client" % http4sVersion % IntegrationTest,
+      "org.scalatest" %% "scalatest" % "3.1.0" % IntegrationTest
     )
   )
   .dependsOn(client)
