@@ -80,6 +80,14 @@ object KafkaConnectMigration {
   ): Resource[F, KafkaConnectMigration[F]] =
     for {
       connect <- KafkaConnectClient[F](client, uri)
+      _ <- Resource.liftF( // this needs to be here to enable accessing files from resource directory
+        Sync[F].delay(
+          FileSystems.newFileSystem(
+            this.getClass.getResource(path).toURI,
+            Map.empty[String, String].asJava
+          )
+        )
+      )
       p <- Resource.liftF(Sync[F].delay(Paths.get(getClass.getResource(path).toURI)))
     } yield new KafkaConnectMigration(connect, p, Blocker.liftExecutionContext(ExecutionContext.global))
 
