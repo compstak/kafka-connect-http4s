@@ -1,0 +1,9 @@
+{
+  "connector.class": "io.debezium.connector.postgresql.PostgresConnector", 
+  "database.hostname": "database", 
+  "database.port": "5432", 
+  "database.user": "postgres", 
+  "database.password": "", 
+  "database.dbname" : "postgres", 
+  "database.server.name": "test"
+}
