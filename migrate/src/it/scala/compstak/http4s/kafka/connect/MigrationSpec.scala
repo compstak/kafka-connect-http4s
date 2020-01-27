@@ -17,7 +17,7 @@ class MigrationSpec extends AnyFunSuite with Matchers {
   test("After migration connector and config should exist") {
 
     AsyncHttpClient.resource[IO]()
-      .flatMap(KafkaConnectMigration[IO](_, Uri.uri("http://localhost:18083")))
+      .flatMap(KafkaConnectMigration[IO](_, Uri.uri("http://localhost:18083"), "test/kafka/connect"))
       .flatMap(migration => Resource.liftF(
           migration.migrate *> 
             IO.sleep(10.seconds) *> 
