@@ -76,11 +76,11 @@ object KafkaConnectMigration {
   def apply[F[_]: Sync: ContextShift](
     client: Client[F],
     uri: Uri,
-    path: String = "/kafka/connect"
+    path: String = "./kafka/connect"
   ): Resource[F, KafkaConnectMigration[F]] =
     for {
       connect <- KafkaConnectClient[F](client, uri)
-      p <- Resource.liftF(Sync[F].delay(Paths.get(getClass.getResource(path).toURI)))
+      p <- Resource.liftF(Sync[F].delay(Paths.get(path)))
     } yield new KafkaConnectMigration(connect, p, Blocker.liftExecutionContext(ExecutionContext.global))
 
   sealed trait MigrationAction
