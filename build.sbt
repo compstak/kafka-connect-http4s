@@ -65,7 +65,7 @@ lazy val migrate = (project in file("migrate"))
     name := "kafka-connect-migrate",
     Defaults.itSettings,
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-io" % "2.2.1",
+      "co.fs2" %% "fs2-io" % "2.2.2",
       "io.circe" %% "circe-parser" % "0.12.3",
       "org.http4s" %% "http4s-async-http-client" % http4sVersion % IntegrationTest,
       "org.scalatest" %% "scalatest" % "3.1.0" % IntegrationTest
