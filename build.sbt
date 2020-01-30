@@ -25,14 +25,21 @@ scalacOptions ++= Seq(
 addCommandAlias("fmtAll", ";scalafmt; test:scalafmt; scalafmtSbt")
 addCommandAlias("fmtCheck", ";scalafmtCheck; test:scalafmtCheck; scalafmtSbtCheck")
 
-val http4sVersion = "0.21.0-RC2"
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "nexus.compstak.com",
+  sys.env.get("NEXUS_USERNAME").getOrElse(""),
+  sys.env.get("NEXUS_PASSWORD").getOrElse("")
+)
+
+val http4sVersion = "0.21.0-RC1"
 
 lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
   publishTo := {
-    val prefix = if (isSnapshot.value) "snapshots" else "releases"
-    Some("CompStak".at("s3://compstak-maven.s3-us-east-1.amazonaws.com/" + prefix))
+    val suffix = if (isSnapshot.value) "snapshots" else "releases"
+    Some("CompStak".at(s"https://nexus.compstak.com/repository/maven-$suffix"))
   }
 )
 
