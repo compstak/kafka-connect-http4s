@@ -31,8 +31,8 @@ lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
   publishTo := {
-    val prefix = if (isSnapshot.value) "snapshots" else "releases"
-    Some("CompStak".at("s3://compstak-maven.s3-us-east-1.amazonaws.com/" + prefix))
+    val suffix = if (isSnapshot.value) "snapshots" else "releases"
+    Some("CompStak".at(s"https://nexus.compstak.com/repository/maven-$suffix"))
   }
 )
 
