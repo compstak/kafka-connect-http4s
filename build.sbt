@@ -32,7 +32,7 @@ credentials += Credentials(
   sys.env.get("NEXUS_PASSWORD").getOrElse("")
 )
 
-val http4sVersion = "0.21.0-RC1"
+val http4sVersion = "0.21.0-RC3"
 
 lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
