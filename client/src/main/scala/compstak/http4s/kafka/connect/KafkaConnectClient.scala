@@ -108,5 +108,5 @@ final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
 object KafkaConnectClient {
 
   def apply[F[_]: Sync](client: Client[F], uri: Uri): Resource[F, KafkaConnectClient[F]] =
-    Resource.pure(new KafkaConnectClient(client, uri))
+    Resource.pure[F, KafkaConnectClient[F]](new KafkaConnectClient[F](client, uri))
 }
