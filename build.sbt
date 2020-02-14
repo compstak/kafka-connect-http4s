@@ -32,7 +32,10 @@ credentials += Credentials(
   sys.env.get("NEXUS_PASSWORD").getOrElse("")
 )
 
-val http4sVersion = "0.21.0-RC1"
+val CirceVersion = "0.13.0"
+val Fs2Version = "2.2.2"
+val Http4sVersion = "0.21.0"
+val ScalatestVersion = "3.1.0"
 
 lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
@@ -59,8 +62,8 @@ lazy val client = (project in file("client"))
   .settings(
     name := "kafka-connect-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-client" % http4sVersion,
-      "org.http4s" %% "http4s-circe" % http4sVersion
+      "org.http4s" %% "http4s-client" % Http4sVersion,
+      "org.http4s" %% "http4s-circe" % Http4sVersion
     )
   )
 
@@ -72,10 +75,10 @@ lazy val migrate = (project in file("migrate"))
     name := "kafka-connect-migrate",
     Defaults.itSettings,
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-io" % "2.2.1",
-      "io.circe" %% "circe-parser" % "0.12.3",
-      "org.http4s" %% "http4s-async-http-client" % http4sVersion % IntegrationTest,
-      "org.scalatest" %% "scalatest" % "3.1.0" % IntegrationTest
+      "co.fs2" %% "fs2-io" % Fs2Version,
+      "io.circe" %% "circe-parser" % CirceVersion,
+      "org.http4s" %% "http4s-async-http-client" % Http4sVersion % IntegrationTest,
+      "org.scalatest" %% "scalatest" % ScalatestVersion % IntegrationTest
     )
   )
   .dependsOn(client)
