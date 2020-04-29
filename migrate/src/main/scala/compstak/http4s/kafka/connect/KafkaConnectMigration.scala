@@ -31,7 +31,8 @@ final class KafkaConnectMigration[F[_]: ContextShift](
       .drain
 
   private[this] def buildActiveConfigs: Stream[F, MigrationAction] =
-    Stream.fromIterator(configs.toIterator)
+    Stream
+      .fromIterator(configs.toIterator)
       .evalMap {
         case (name, conf) =>
           conf.asObject match {
