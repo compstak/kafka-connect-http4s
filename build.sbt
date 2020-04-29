@@ -77,6 +77,7 @@ lazy val migrate = (project in file("migrate"))
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-io" % Fs2Version,
       "io.circe" %% "circe-parser" % CirceVersion,
+      "io.circe" %% "circe-literal" % CirceVersion % IntegrationTest,
       "org.http4s" %% "http4s-async-http-client" % Http4sVersion % IntegrationTest,
       "org.scalatest" %% "scalatest" % ScalatestVersion % IntegrationTest
     )
