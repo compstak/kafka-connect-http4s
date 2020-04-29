@@ -16,8 +16,7 @@ import scala.concurrent.ExecutionContext
 
 final class KafkaConnectMigration[F[_]: ContextShift](
   val client: KafkaConnectClient[F],
-  path: Path,
-  blocker: Blocker
+  configs: Map[String, Json]
 )(implicit val F: Sync[F]) {
 
   def migrate: F[Unit] =
@@ -31,14 +30,8 @@ final class KafkaConnectMigration[F[_]: ContextShift](
       .compile
       .drain
 
-  private[this] def listActiveConfigs: Stream[F, Path] =
-    file
-      .walk[F](blocker, path)
-      .filter(_.toFile().getName().endsWith(".json"))
-
   private[this] def buildActiveConfigs: Stream[F, MigrationAction] =
-    listActiveConfigs
-      .evalMap(loadConfig)
+    Stream.fromIterator(configs.toIterator)
       .evalMap {
         case (name, conf) =>
           conf.asObject match {
@@ -58,17 +51,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
   private[this] def buildDeprecatedConfigs: F[List[MigrationAction]] =
     for {
       connectors <- client.connectorNames
-      configs <- listActiveConfigs.compile.toList
-    } yield connectors.filterNot(configs.map(_.getFileName.toString.replace(".json", "")).contains).map(Delete(_))
-
-  private[this] def loadConfig(p: Path): F[(String, Json)] = {
-    val content =
-      file.readAll(p, blocker, 4096).through(utf8Decode).compile.lastOrError
-
-    content.flatMap { js =>
-      parse(js).map((p.getFileName.toString.replace(".json", ""), _)).liftTo[F]
-    }
-  }
+    } yield connectors.filterNot(configs.map(_._1).toList.contains).map(Delete(_))
 }
 
 object KafkaConnectMigration {
@@ -76,12 +59,11 @@ object KafkaConnectMigration {
   def apply[F[_]: Sync: ContextShift](
     client: Client[F],
     uri: Uri,
-    path: String = "./kafka/connect"
+    configs: Map[String, Json]
   ): Resource[F, KafkaConnectMigration[F]] =
     for {
       connect <- KafkaConnectClient[F](client, uri)
-      p <- Resource.liftF(Sync[F].delay(Paths.get(path)))
-    } yield new KafkaConnectMigration(connect, p, Blocker.liftExecutionContext(ExecutionContext.global))
+    } yield new KafkaConnectMigration(connect, configs)
 
   sealed trait MigrationAction
 
