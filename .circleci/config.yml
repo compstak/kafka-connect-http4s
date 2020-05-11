@@ -81,7 +81,7 @@ jobs:
 
     - run:
         name: Run unit tests
-        command: cat /dev/null | sbt test
+        command: cat /dev/null | sbt +test
 
     - save_cache:
         paths:
