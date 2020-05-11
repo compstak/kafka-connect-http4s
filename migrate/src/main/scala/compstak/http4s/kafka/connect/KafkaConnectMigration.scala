@@ -32,7 +32,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
 
   private[this] def buildActiveConfigs: Stream[F, MigrationAction] =
     Stream
-      .fromIterator(configs.toIterator)
+      .fromIterator(configs.iterator)
       .evalMap {
         case (name, conf) =>
           conf.asObject match {
@@ -40,7 +40,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
               val isValidMap = obj.values.forall(_.isString)
               if (!isValidMap) F.raiseError[MigrationAction](new Throwable("Configuration values must be strings"))
               else {
-                val finalMap = obj.toMap.mapValues(_.asString).collect {
+                val finalMap = obj.toMap.fmap(_.asString).collect {
                   case (s, Some(c)) => s -> c
                 }
                 F.pure[MigrationAction](Upsert(name, finalMap))

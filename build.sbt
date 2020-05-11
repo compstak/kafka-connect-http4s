@@ -7,7 +7,7 @@ ThisBuild / scalaVersion := scala212
 
 enablePlugins(DockerComposePlugin)
 
-scalacOptions ++= Seq(
+scalacOptions in ThisBuild ++= Seq(
   "-deprecation",
   "-encoding",
   "UTF-8",
