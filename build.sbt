@@ -35,7 +35,7 @@ credentials += Credentials(
 val CirceVersion = "0.13.0"
 val Fs2Version = "2.2.2"
 val Http4sVersion = "0.21.0"
-val ScalatestVersion = "3.1.0"
+val ScalatestVersion = "3.1.2"
 
 lazy val commonSettings = Seq(
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
