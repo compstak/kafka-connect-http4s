@@ -33,7 +33,7 @@ credentials += Credentials(
 )
 
 val CirceVersion = "0.13.0"
-val Fs2Version = "2.2.2"
+val Fs2Version = "2.4.1"
 val Http4sVersion = "0.21.0"
 val ScalatestVersion = "3.1.0"
 
