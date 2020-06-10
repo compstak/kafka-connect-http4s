@@ -38,6 +38,7 @@ val Http4sVersion = "0.21.0"
 val ScalatestVersion = "3.1.0"
 
 lazy val commonSettings = Seq(
+  scalafmtOnCompile := true,
   addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
   publishTo := {
@@ -74,6 +75,7 @@ lazy val migrate = (project in file("migrate"))
   .settings(
     name := "kafka-connect-migrate",
     Defaults.itSettings,
+    inConfig(IntegrationTest)(ScalafmtPlugin.scalafmtConfigSettings),
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-io" % Fs2Version,
       "io.circe" %% "circe-parser" % CirceVersion,
