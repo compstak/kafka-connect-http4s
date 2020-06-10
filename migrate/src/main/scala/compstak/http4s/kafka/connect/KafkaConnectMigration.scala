@@ -16,8 +16,11 @@ import scala.concurrent.ExecutionContext
 
 final class KafkaConnectMigration[F[_]: ContextShift](
   val client: KafkaConnectClient[F],
-  configs: Map[String, Json]
+  configs: Map[String, Json],
+  service: String
 )(implicit val F: Sync[F]) {
+
+  val COMPSTAK_SERVICE = "compstak.service"
 
   def migrate: F[Unit] =
     Stream
@@ -40,9 +43,12 @@ final class KafkaConnectMigration[F[_]: ContextShift](
               val isValidMap = obj.values.forall(_.isString)
               if (!isValidMap) F.raiseError[MigrationAction](new Throwable("Configuration values must be strings"))
               else {
-                val finalMap = obj.toMap.fmap(_.asString).collect {
-                  case (s, Some(c)) => s -> c
-                }
+                val finalMap = obj.toMap
+                  .fmap(_.asString)
+                  .collect {
+                    case (s, Some(c)) => s -> c
+                  }
+                  .combine(Map(COMPSTAK_SERVICE -> service))
                 F.pure[MigrationAction](Upsert(name, finalMap))
               }
             case None => F.raiseError[MigrationAction](new Throwable("Configuration must be a map"))
@@ -52,7 +58,10 @@ final class KafkaConnectMigration[F[_]: ContextShift](
   private[this] def buildDeprecatedConfigs: F[List[MigrationAction]] =
     for {
       connectors <- client.connectorNames
-    } yield connectors.filterNot(configs.map(_._1).toList.contains).map(Delete(_))
+      serviceConnectors <- connectors.filterA(name =>
+        client.connectorConfig(name).map(_.get(COMPSTAK_SERVICE).forall(_ === service))
+      )
+    } yield serviceConnectors.filterNot(configs.map(_._1).toList.contains).map(Delete(_))
 }
 
 object KafkaConnectMigration {
@@ -60,11 +69,12 @@ object KafkaConnectMigration {
   def apply[F[_]: Sync: ContextShift](
     client: Client[F],
     uri: Uri,
-    configs: Map[String, Json]
+    configs: Map[String, Json],
+    service: String
   ): Resource[F, KafkaConnectMigration[F]] =
     for {
       connect <- KafkaConnectClient[F](client, uri)
-    } yield new KafkaConnectMigration(connect, configs)
+    } yield new KafkaConnectMigration(connect, configs, service)
 
   sealed trait MigrationAction
 
