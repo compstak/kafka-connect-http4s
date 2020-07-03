@@ -20,7 +20,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
   service: String
 )(implicit val F: Sync[F]) {
 
-  val COMPSTAK_SERVICE = "compstak.service"
+  val SERVICE_NAME = "service.name"
 
   def migrate: F[Unit] =
     Stream
@@ -48,7 +48,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
                   .collect {
                     case (s, Some(c)) => s -> c
                   }
-                  .combine(Map(COMPSTAK_SERVICE -> service))
+                  .+(SERVICE_NAME -> service)
                 F.pure[MigrationAction](Upsert(name, finalMap))
               }
             case None => F.raiseError[MigrationAction](new Throwable("Configuration must be a map"))
@@ -59,7 +59,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
     for {
       connectors <- client.connectorNames
       serviceConnectors <- connectors.filterA(name =>
-        client.connectorConfig(name).map(_.get(COMPSTAK_SERVICE).forall(_ === service))
+        client.connectorConfig(name).map(_.get(SERVICE_NAME).forall(_ === service))
       )
     } yield serviceConnectors.filterNot(configs.map(_._1).toList.contains).map(Delete(_))
 }

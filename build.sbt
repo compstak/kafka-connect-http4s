@@ -48,8 +48,8 @@ scalacOptions in ThisBuild ++= Seq(
   "-Xfatal-warnings"
 )
 
-addCommandAlias("fmtAll", ";scalafmt; test:scalafmt; scalafmtSbt")
-addCommandAlias("fmtCheck", ";scalafmtCheck; test:scalafmtCheck; scalafmtSbtCheck")
+addCommandAlias("fmtAll", ";scalafmt; test:scalafmt; scalafmtSbt; it:scalafmt")
+addCommandAlias("fmtCheck", ";scalafmtCheck; test:scalafmtCheck; scalafmtSbtCheck; it:scalafmtCheck")
 addCommandAlias("validate", ";fmtCheck; test; it:compile")
 
 val CirceVersion = "0.13.0"

@@ -75,10 +75,10 @@ class MigrationSpec extends AnyFunSuite with Matchers {
         Resource.liftF(
           migration.migrate *>
             IO.sleep(10.seconds) *>
-            migration.client.connectorNames.map(_.sorted shouldBe List("test1", "test2"))
+            migration.client.connectorNames
         )
       )
-      .use(IO.pure)
+      .use(names => IO(names.sorted shouldBe List("test1", "test2")))
       .unsafeRunSync()
   }
 }
