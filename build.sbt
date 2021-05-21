@@ -1,5 +1,5 @@
-val scala212 = "2.12.10"
-val scala213 = "2.13.1"
+val scala212 = "2.12.13"
+val scala213 = "2.13.6"
 val supportedScalaVersions = List(scala212, scala213)
 
 enablePlugins(DockerComposePlugin)
@@ -33,7 +33,7 @@ inThisBuild(
   )
 )
 
-scalacOptions in ThisBuild ++= Seq(
+ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-encoding",
   "UTF-8",
@@ -43,7 +43,6 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-value-discard",
   "-Ywarn-dead-code",
   "-Xlint:infer-any",
-  "-Xlint:nullary-override",
   "-Xlint:nullary-unit",
   "-Xfatal-warnings"
 )
@@ -52,20 +51,20 @@ addCommandAlias("fmtAll", ";scalafmt; test:scalafmt; scalafmtSbt; it:scalafmt")
 addCommandAlias("fmtCheck", ";scalafmtCheck; test:scalafmtCheck; scalafmtSbtCheck; it:scalafmtCheck")
 addCommandAlias("validate", ";fmtCheck; test; it:compile")
 
-val CirceVersion = "0.13.0"
-val Fs2Version = "2.2.2"
-val Http4sVersion = "0.21.6"
+val CirceVersion = "0.14.0-M5"
+val Fs2Version = "3.0.4"
+val Http4sVersion = "1.0.0-M21"
 val ScalatestVersion = "3.1.0"
 
 lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
   crossScalaVersions := supportedScalaVersions,
-  addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.11.0").cross(CrossVersion.full)),
+  addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.13.0").cross(CrossVersion.full)),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
 lazy val noPublishSettings = Seq(
-  skip in publish := true
+  publish / skip := true
 )
 
 lazy val client = (project in file("client"))
