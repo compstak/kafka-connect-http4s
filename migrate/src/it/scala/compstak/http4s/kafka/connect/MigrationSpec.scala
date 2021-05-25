@@ -1,20 +1,18 @@
 package compstak.http4s.kafka.connect
 
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+
+import cats.effect._
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
-import cats.effect.{ContextShift, IO, Resource, Timer}
 import io.circe.literal._
+import org.http4s.Uri
+import org.http4s.client.asynchttpclient.AsyncHttpClient
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-import org.http4s.client.asynchttpclient.AsyncHttpClient
-import org.http4s.Uri
-
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
 
 class MigrationSpec extends AnyFunSuite with Matchers {
-
-  implicit val ctx: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-  implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
   test("After migration connector and config should exist") {
 
@@ -41,7 +39,7 @@ class MigrationSpec extends AnyFunSuite with Matchers {
         )
       )
       .flatMap(migration =>
-        Resource.liftF(
+        Resource.eval(
           migration.migrate *>
             IO.sleep(10.seconds) *>
             migration.client.connectorNames.map(_ shouldBe List("test1"))
@@ -72,7 +70,7 @@ class MigrationSpec extends AnyFunSuite with Matchers {
           )
       )
       .flatMap(migration =>
-        Resource.liftF(
+        Resource.eval(
           migration.migrate *>
             IO.sleep(10.seconds) *>
             migration.client.connectorNames

@@ -4,7 +4,7 @@
 .bloop/
 .idea/
 .metals/
-project/metals.sbt
+metals.sbt
 
 .DS_Store
 
@@ -21,3 +21,6 @@ target/
 test-reports
 
 .env
+
+.bsp
+.vscode
