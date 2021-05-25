@@ -54,7 +54,7 @@ addCommandAlias("validate", ";fmtCheck; test; it:compile")
 val CirceVersion = "0.14.0-M5"
 val Fs2Version = "3.0.4"
 val Http4sVersion = "1.0.0-M21"
-val ScalatestVersion = "3.1.0"
+val ScalatestVersion = "3.1.4"
 
 lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
