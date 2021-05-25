@@ -1,13 +1,13 @@
 package compstak.http4s.kafka.connect
 
-import org.http4s.client.Client
-import org.http4s.{Method, Request, Uri}
-import org.http4s.circe.CirceEntityCodec._
-import cats.effect.{Resource, Sync}
+import cats.effect._
 import cats.implicits._
-import io.circe.{Decoder, Encoder}
+import io.circe._
+import org.http4s._
+import org.http4s.circe.CirceEntityCodec._
+import org.http4s.client.Client
 
-final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
+final class KafkaConnectClient[F[_]: Async](client: Client[F], root: Uri) {
 
   def connectorNames: F[List[String]] =
     client.expect(
@@ -107,6 +107,6 @@ final class KafkaConnectClient[F[_]: Sync](client: Client[F], root: Uri) {
 
 object KafkaConnectClient {
 
-  def apply[F[_]: Sync](client: Client[F], uri: Uri): Resource[F, KafkaConnectClient[F]] =
+  def apply[F[_]: Async](client: Client[F], uri: Uri): Resource[F, KafkaConnectClient[F]] =
     Resource.pure[F, KafkaConnectClient[F]](new KafkaConnectClient[F](client, uri))
 }

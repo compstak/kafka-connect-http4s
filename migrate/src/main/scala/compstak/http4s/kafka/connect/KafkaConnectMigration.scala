@@ -1,20 +1,29 @@
 package compstak.http4s.kafka.connect
 
-import java.nio.file.{FileSystems, Files, Path, Paths}
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+
+import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import cats.implicits._
-import compstak.http4s.kafka.connect.KafkaConnectMigration.{Delete, MigrationAction, Upsert}
 import fs2.Stream
-import fs2.io.{file, readInputStream}
+import fs2.io.file
+import fs2.io.readInputStream
 import fs2.text.utf8Decode
 import io.circe.Json
 import io.circe.parser.parse
 import org.http4s.Uri
 import org.http4s.client.Client
-import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext
 
-final class KafkaConnectMigration[F[_]: ContextShift](
+import compstak.http4s.kafka.connect.KafkaConnectMigration.Delete
+import compstak.http4s.kafka.connect.KafkaConnectMigration.MigrationAction
+import compstak.http4s.kafka.connect.KafkaConnectMigration.Upsert
+
+final class KafkaConnectMigration[F[_]](
   val client: KafkaConnectClient[F],
   configs: Map[String, Json],
   service: String
@@ -35,7 +44,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
 
   private[this] def buildActiveConfigs: Stream[F, MigrationAction] =
     Stream
-      .fromIterator(configs.iterator)
+      .fromIterator(configs.iterator, 4096)
       .evalMap {
         case (name, conf) =>
           conf.asObject match {
@@ -66,7 +75,7 @@ final class KafkaConnectMigration[F[_]: ContextShift](
 
 object KafkaConnectMigration {
 
-  def apply[F[_]: Sync: ContextShift](
+  def apply[F[_]: Async](
     client: Client[F],
     uri: Uri,
     configs: Map[String, Json],
