@@ -1,16 +1,15 @@
 package compstak.http4s.kafka.connect
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
-
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import io.circe.literal._
 import org.http4s.Uri
-import org.http4s.client.asynchttpclient.AsyncHttpClient
+import org.http4s.asynchttpclient.client.AsyncHttpClient
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+
+import scala.concurrent.duration._
 
 class MigrationSpec extends AnyFunSuite with Matchers {
 
