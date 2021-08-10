@@ -4,7 +4,7 @@ import cats.effect._
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import io.circe.literal._
-import org.http4s.Uri
+import org.http4s.implicits._
 import org.http4s.asynchttpclient.client.AsyncHttpClient
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -20,7 +20,7 @@ class MigrationSpec extends AnyFunSuite with Matchers {
       .flatMap(
         KafkaConnectMigration[IO](
           _,
-          Uri.uri("http://localhost:18083"),
+          uri"http://localhost:18083",
           Map(
             "test1" -> json"""
                         {
@@ -50,7 +50,7 @@ class MigrationSpec extends AnyFunSuite with Matchers {
           .flatMap(
             KafkaConnectMigration[IO](
               _,
-              Uri.uri("http://localhost:18083"),
+              uri"http://localhost:18083",
               Map(
                 "test2" -> json"""
                             {
