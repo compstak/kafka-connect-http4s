@@ -52,7 +52,7 @@ addCommandAlias("fmtCheck", ";scalafmtCheck; test:scalafmtCheck; scalafmtSbtChec
 addCommandAlias("validate", ";fmtCheck; test; it:compile")
 
 val CirceVersion = "0.14.0-M5"
-val Fs2Version = "3.0.4"
+val Fs2Version = "3.0.6"
 val Http4sVersion = "0.23.1"
 val ScalatestVersion = "3.1.0"
 
