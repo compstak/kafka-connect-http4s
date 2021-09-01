@@ -59,7 +59,7 @@ val ScalatestVersion = "3.1.0"
 lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
   crossScalaVersions := supportedScalaVersions,
-  addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.13.0").cross(CrossVersion.full)),
+  addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.13.1").cross(CrossVersion.full)),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
